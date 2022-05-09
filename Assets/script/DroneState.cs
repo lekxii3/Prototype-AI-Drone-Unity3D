@@ -24,6 +24,7 @@ public class DroneState : MonoBehaviour
     public GameObject player;
     public Transform dronePosition;
     public float detectionDistance = 1f;
+    public LayerMask playerLayer;
 
     [Header ("Raycast")]
     private RaycastHit _raycastHit;
@@ -173,12 +174,18 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
         {
             direction = Vector3.Normalize(player.transform.position - dronePosition.position);
 
-            if(Physics.Raycast(dronePosition.position, direction, out _raycastHit, detectionDistance))
+            if(Physics.Raycast(dronePosition.position, direction, out _raycastHit, 12f, playerLayer))
             {
                 print("je te vois");
+                Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.green, 1f );
+                
+            }
+            else
+            {
+                Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.red, 1f );
             }
 
-            Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.red, 1f );
+            
 
         
         }
