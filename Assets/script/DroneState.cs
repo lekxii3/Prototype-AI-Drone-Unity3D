@@ -25,6 +25,7 @@ public class DroneState : MonoBehaviour
     public Transform dronePosition;
     public float detectionDistance = 1f;
     public LayerMask playerLayer;
+    public bool detected = false;
 
     [Header ("Raycast")]
     private RaycastHit _raycastHit;
@@ -45,24 +46,15 @@ public class DroneState : MonoBehaviour
 private void Update() 
 {   
     
-    TestBehavior();
-    Detection();
+    if(CheckForTransition())
+    {
+        TransitionState();
+    }
+    StateBehavior();
+    
 }
 
-private void TestBehavior()
-{
-    if(destinationA == true && _navMesh.remainingDistance<0.5f)
-            {
-                destinationA = false;
-                
-                _navMesh.SetDestination(positionB.position);
-            }
-            else if(_navMesh.remainingDistance<0.5f)
-            {
-                destinationA = true;
-                _navMesh.SetDestination(positionA.position);
-            }
-}
+
 
 
 private bool CheckForTransition() // porte qui s'ouvre pour démarré la transition vers un autre etat
@@ -75,14 +67,35 @@ private bool CheckForTransition() // porte qui s'ouvre pour démarré la transit
 
         case DroneStatement.Patrol:
         // etat de patrouille d'un point A vers B 
+        if(detected == true)
+        {
+            nexState = DroneStatement.Alert;
+            return true;
+        }
+        
         break;
 
         case DroneStatement.Alert:
         //etat de contact, tres courte etat qui transite rapidement entre Shooting ou Patrol
+        if(detected == false)
+        {
+            nexState = DroneStatement.Patrol;
+            return true;
+        }
+        if(detected == true)
+        {
+            nexState = DroneStatement.Shooting;
+            return true;
+        }
         break;
 
         case DroneStatement.Shooting:
         //etat d'attaque vers le player
+        if(detected == false && nexState != DroneStatement.Alert)
+        {
+            nexState = DroneStatement.Patrol;
+            return true;
+        }
         break;
 
         case DroneStatement.RunAway:
@@ -134,28 +147,51 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
 
             //etat de patrouille d'un point A vers B 
              if(destinationA == true && _navMesh.remainingDistance<0.5f)
-            {
+                {
                 destinationA = false;
                 
                 _navMesh.SetDestination(positionB.position);
-            }
-            else if(_navMesh.remainingDistance<0.5f)
-            {
+                }
+             else if(_navMesh.remainingDistance<0.5f)
+                {
                 destinationA = true;
                 _navMesh.SetDestination(positionA.position);
-            }
+                }
 
             break;
 
             case DroneStatement.Alert:
 
             //etat de contact, tres courte etat qui transite rapidement entre Shooting ou Patrol
+            if(player.gameObject != null)
+             {
+                direction = Vector3.Normalize(player.transform.position - dronePosition.position);
+
+                 if(Physics.Raycast(dronePosition.position, direction, out _raycastHit, 12f, playerLayer))
+                 {
+                  detected = true;
+                  Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.green, 1f );
+                
+                 }
+                 else
+                  {
+                  detected = false;
+                  Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.red, 1f );
+                 }
+             }
+
+
+                        
 
             break;
 
             case DroneStatement.Shooting:
 
             //etat d'attaque vers le player
+            if(detected == true)
+            {
+                Debug.Log("je te tire dessus");
+            }
 
             break;
 
@@ -168,7 +204,7 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
         }
     }
 
-    private void Detection()
+    private void DetectionState()
     {
         if(player.gameObject != null)
         {
@@ -176,12 +212,13 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
 
             if(Physics.Raycast(dronePosition.position, direction, out _raycastHit, 12f, playerLayer))
             {
-                print("je te vois");
+                detected = true;
                 Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.green, 1f );
                 
             }
             else
             {
+                detected = false;
                 Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.red, 1f );
             }
 
@@ -192,6 +229,23 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
 
         
     }
+
+
+    private void PatrolState()
+{
+    if(destinationA == true && _navMesh.remainingDistance<0.5f)
+            {
+                destinationA = false;
+                
+                _navMesh.SetDestination(positionB.position);
+            }
+            else if(_navMesh.remainingDistance<0.5f)
+            {
+                destinationA = true;
+                _navMesh.SetDestination(positionA.position);
+            }
+}
+
 
 }
  
