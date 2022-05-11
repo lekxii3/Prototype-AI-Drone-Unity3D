@@ -35,7 +35,7 @@ public class DroneState : MonoBehaviour
     [Header ("Shooting")]
     public Transform bulletSpawnPoint;
     public GameObject bulletPrefab;
-    public float bulletspeed = 100f;    
+    public float bulletspeed = 10000f;    
     private bool _canShoot = true;
 
 
@@ -151,41 +151,29 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
     {
         switch(state)
         {
-            case DroneStatement.None:
-            Debug.Log("none");
+            case DroneStatement.None:            
             // etat vide, transite automatiquement vers Patrol
-
             break;
 
             case DroneStatement.Patrol:
-            Debug.Log("patrol");
             //etat de patrouille d'un point A vers B 
             PatrolState();
             DetectionState();
             break;
 
             case DroneStatement.Alert:
-            Debug.Log("Alert");
-            //etat de contact, tres courte etat qui transite rapidement entre Shooting ou Patrol
-                              
+            //etat de contact, tres courte etat qui transite rapidement entre Shooting ou Patrol                              
             break;
 
             case DroneStatement.Shooting:
-            Debug.Log("shooting");
             //etat d'attaque vers le player
             if(detected == true)
             {
-                DetectionState();                
-                Debug.Log("je te tire dessus");
+                SightAndShoot(); 
             }
-            
-        
-
             break;
 
             case DroneStatement.RunAway:
-            Debug.Log("runaway");
-
             //etat de fuite si HP 1 
 
             break;
@@ -203,25 +191,12 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
             {
                 if(_raycastHit.collider.gameObject.CompareTag("Player"))
                 {
-                    
                     detected = true;
-                    
-
-
-                    _lookrotation = Quaternion.LookRotation(direction);
-                    Vector3 rotation = _lookrotation.eulerAngles;
-                    dronePosition.rotation = Quaternion.Euler(0f,rotation.y,0f);
-
-
-
-
-
                     Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.green, 1f );
                 }
                 else{
                     detected = false;
-                }
-                                               
+                }                                               
             } 
             else{
                 detected = false;
@@ -230,29 +205,55 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
                 
     }
 
+    private void SightAndShoot()
+    {
+        if(player.gameObject != null)
+        {
+            direction = Vector3.Normalize(player.transform.position - dronePosition.position);
+
+            if(Physics.Raycast(dronePosition.position, direction, out _raycastHit, 12f))
+            {
+                if(_raycastHit.collider.gameObject.CompareTag("Player"))
+                {
+                    detected = true;    
+                    _navMesh.SetDestination(dronePosition.position);                                    
+                    gameObject.transform.LookAt(playerPosition.transform.position);
+                    StartCoroutine(Cadence());
+                    Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.green, 1f );
+                }
+                //j'ai retiré le petit else qui provoqué leffet saccade                                               
+            } 
+            else{
+                detected = false;
+                Debug.Log("a2");
+            }                     
+        }        
+                
+    }
+
 
     private void PatrolState()
-{
-   
+{  
     if(destinationA == true && _navMesh.remainingDistance<0.5f)
-            {
-                destinationA = false;
-                
-                _navMesh.SetDestination(positionB.position);
-            }
-            else if(_navMesh.remainingDistance<0.5f)
-            {
-                destinationA = true;
-                _navMesh.SetDestination(positionA.position);
-            }
+    {
+    destinationA = false;
+    _navMesh.SetDestination(positionB.position);
+    }
+    else if(_navMesh.remainingDistance<0.5f)
+    {
+    destinationA = true;
+    _navMesh.SetDestination(positionA.position);
+    }   
+    
 }
 
     private void ShootState()
     {
         if(detected == true)
         {            
-            Instantiate(bulletPrefab, bulletSpawnPoint.position, bulletSpawnPoint.rotation);
-            bulletPrefab.GetComponent<Rigidbody>().velocity = bulletSpawnPoint.forward * bulletspeed;
+           
+            Instantiate(bulletPrefab, bulletSpawnPoint.transform.position, bulletSpawnPoint.transform.rotation);
+            bulletPrefab.GetComponent<Rigidbody>().AddForce(bulletSpawnPoint.up * bulletspeed);
         }
     }
 

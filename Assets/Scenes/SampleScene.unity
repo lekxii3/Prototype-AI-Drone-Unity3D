@@ -447,7 +447,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _navMesh: {fileID: 527049840}
-  _Drone: {fileID: 527049839}
+  _Drone: {fileID: 719559073}
   state: 0
   nexState: 0
   destinationA: 0
