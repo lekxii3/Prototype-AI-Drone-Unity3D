@@ -6,6 +6,8 @@ using UnityEngine.AI;
 public class DroneState : MonoBehaviour
 {
     public NavMeshAgent _navMesh;  
+    private Rigidbody _rb;
+    public GameObject _Drone;
 
     [Header ("State Machine")]
     public DroneStatement state = DroneStatement.None;
@@ -24,11 +26,17 @@ public class DroneState : MonoBehaviour
     public float detectionDistance = 1f;
     public LayerMask playerLayer;
     public bool detected = false;
+    private Quaternion _lookrotation;
 
     [Header ("Raycast")]
     private RaycastHit _raycastHit;
     private Vector3 direction;
 
+    [Header ("Shooting")]
+    public Transform bulletSpawnPoint;
+    public GameObject bulletPrefab;
+    public float bulletspeed = 100f;    
+    private bool _canShoot = true;
 
 
     public enum DroneStatement
@@ -38,11 +46,13 @@ public class DroneState : MonoBehaviour
         Alert,
         Shooting,
         RunAway,
+        Death, // a faire
     }
 
 private void Start() 
 {
     _navMesh = gameObject.GetComponent<NavMeshAgent>();
+    _rb = gameObject.GetComponent<Rigidbody>();
     destinationA = true;
     state = DroneStatement.Patrol;
 
@@ -76,8 +86,7 @@ private bool CheckForTransition() // porte qui s'ouvre pour démarré la transit
         {
             nexState = DroneStatement.Alert;
             return true;
-        }
-        
+        }        
         break;
 
         case DroneStatement.Alert:
@@ -96,7 +105,8 @@ private bool CheckForTransition() // porte qui s'ouvre pour démarré la transit
 
         case DroneStatement.Shooting:
         //etat d'attaque vers le player
-        if(detected == false && nexState != DroneStatement.Alert){
+        if(detected == false)
+        {
             nexState = DroneStatement.Patrol;
             return true;
         }
@@ -165,8 +175,11 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
             //etat d'attaque vers le player
             if(detected == true)
             {
+                DetectionState();                
                 Debug.Log("je te tire dessus");
             }
+            
+        
 
             break;
 
@@ -190,8 +203,19 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
             {
                 if(_raycastHit.collider.gameObject.CompareTag("Player"))
                 {
-                    Debug.Log("je te vois");
+                    
                     detected = true;
+                    
+
+
+                    _lookrotation = Quaternion.LookRotation(direction);
+                    Vector3 rotation = _lookrotation.eulerAngles;
+                    dronePosition.rotation = Quaternion.Euler(0f,rotation.y,0f);
+
+
+
+
+
                     Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.green, 1f );
                 }
                 else{
@@ -223,6 +247,26 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
             }
 }
 
+    private void ShootState()
+    {
+        if(detected == true)
+        {            
+            Instantiate(bulletPrefab, bulletSpawnPoint.position, bulletSpawnPoint.rotation);
+            bulletPrefab.GetComponent<Rigidbody>().velocity = bulletSpawnPoint.forward * bulletspeed;
+        }
+    }
+
+    private IEnumerator Cadence()
+    {
+        if(_canShoot == true)
+        {
+            _canShoot = false;
+            yield return new WaitForSeconds(0.5f);
+            ShootState();
+            _canShoot = true;
+        }       
+        
+    }
 
 }
  
