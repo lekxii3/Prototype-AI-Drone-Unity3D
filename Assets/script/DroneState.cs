@@ -221,7 +221,9 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
                     StartCoroutine(Cadence());
                     Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.green, 1f );
                 }
-                //j'ai retiré le petit else qui provoqué leffet saccade                                               
+                else{
+                    detected = false;
+                }                                            
             } 
             else{
                 detected = false;
@@ -237,10 +239,12 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
     if(destinationA == true && _navMesh.remainingDistance<0.5f)
     {
     destinationA = false;
+    destinationB = true;
     _navMesh.SetDestination(positionB.position);
     }
-    else if(_navMesh.remainingDistance<0.5f)
+    else if(destinationB == true && _navMesh.remainingDistance<0.5f)
     {
+    destinationB = false;
     destinationA = true;
     _navMesh.SetDestination(positionA.position);
     }   
@@ -252,8 +256,8 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
         if(detected == true)
         {            
            
-            Instantiate(bulletPrefab, bulletSpawnPoint.transform.position, bulletSpawnPoint.transform.rotation);
-            bulletPrefab.GetComponent<Rigidbody>().AddForce(bulletSpawnPoint.up * bulletspeed);
+            GameObject NewBullet = Instantiate(bulletPrefab, bulletSpawnPoint.transform.position, bulletSpawnPoint.transform.rotation);
+            NewBullet.GetComponent<Rigidbody>().AddForce(bulletSpawnPoint.forward * bulletspeed);
         }
     }
 
