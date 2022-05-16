@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,7 +14,7 @@ public class DroneState : MonoBehaviour
     public DroneStatement state = DroneStatement.None;
     public DroneStatement nexState = DroneStatement.None;
 
-    [Header ("Patrol")]
+    [Header("Patrol")] 
     public bool destinationA = false;
     public bool destinationB = false;
     public Transform positionA;
@@ -53,20 +54,18 @@ private void Start()
 {
     _navMesh = gameObject.GetComponent<NavMeshAgent>();
     _rb = gameObject.GetComponent<Rigidbody>();
+    
     destinationA = true;
     state = DroneStatement.Patrol;
-
 }
 
 private void Update() 
-{   
-    
+{
     if(CheckForTransition())
     {
         TransitionState();
     }
     StateBehavior();
-    
 }
 
 
@@ -166,12 +165,13 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
             break;
 
             case DroneStatement.Shooting:
-            //etat d'attaque vers le player
+                //etat d'attaque vers le player
             if(detected == true)
             {
                 SightAndShoot(); 
             }
-            break;
+                DetectionState();
+                break;
 
             case DroneStatement.RunAway:
             //etat de fuite si HP 1 
@@ -183,7 +183,7 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
 
     private void DetectionState()
     {
-        if(player.gameObject != null)
+       if(player.gameObject != null)
         {
             direction = Vector3.Normalize(player.transform.position - dronePosition.position);
 
@@ -192,10 +192,11 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
                 if(_raycastHit.collider.gameObject.CompareTag("Player"))
                 {
                     detected = true;
-                    Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.green, 1f );
+                    Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.green, 1f);
                 }
                 else{
                     detected = false;
+                   
                 }                                               
             } 
             else{
@@ -207,30 +208,15 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
 
     private void SightAndShoot()
     {
-        if(player.gameObject != null)
+        if(detected == true)
         {
-            direction = Vector3.Normalize(player.transform.position - dronePosition.position);
-
-            if(Physics.Raycast(dronePosition.position, direction, out _raycastHit, 12f))
-            {
-                if(_raycastHit.collider.gameObject.CompareTag("Player"))
-                {
-                    detected = true;    
-                    _navMesh.SetDestination(dronePosition.position);                                    
-                    gameObject.transform.LookAt(playerPosition.transform.position);
-                    StartCoroutine(Cadence());
-                    Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.green, 1f );
-                }
-                else{
-                    detected = false;
-                }                                            
-            } 
-            else{
-                detected = false;
-                Debug.Log("a2");
-            }                     
-        }        
-                
+            _navMesh.SetDestination(dronePosition.position);
+            Vector3 playerTargeted = new Vector3(playerPosition.position.x, transform.position.y, playerPosition.position.z);
+            gameObject.transform.LookAt(playerTargeted);
+            StartCoroutine(Cadence());
+            Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.green, 1f );
+              
+        }
     }
 
 
@@ -254,8 +240,7 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
     private void ShootState()
     {
         if(detected == true)
-        {            
-           
+        {
             GameObject NewBullet = Instantiate(bulletPrefab, bulletSpawnPoint.transform.position, bulletSpawnPoint.transform.rotation);
             NewBullet.GetComponent<Rigidbody>().AddForce(bulletSpawnPoint.forward * bulletspeed);
         }
@@ -269,8 +254,7 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
             yield return new WaitForSeconds(0.5f);
             ShootState();
             _canShoot = true;
-        }       
-        
+        }    
     }
 
 }
