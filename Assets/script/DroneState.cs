@@ -83,7 +83,7 @@ private bool CheckForTransition() // porte qui s'ouvre pour démarré la transit
         // etat de patrouille d'un point A vers B 
         if(detected == true)
         {
-            nexState = DroneStatement.Alert;
+            nexState = DroneStatement.Shooting;
             return true;
         }        
         break;
@@ -214,7 +214,7 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
             Vector3 playerTargeted = new Vector3(playerPosition.position.x, transform.position.y, playerPosition.position.z);
             gameObject.transform.LookAt(playerTargeted);
             StartCoroutine(Cadence());
-            Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.green, 1f );
+            //Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.green, 1f );
               
         }
     }

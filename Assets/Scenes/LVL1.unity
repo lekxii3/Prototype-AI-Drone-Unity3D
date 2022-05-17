@@ -606,6 +606,10 @@ PrefabInstance:
       propertyPath: playerPosition
       value: 
       objectReference: {fileID: 934497254}
+    - target: {fileID: 2942018200777460737, guid: e5ad517b6ffe7904e984d84ac049c2f2, type: 3}
+      propertyPath: playerLayer.m_Bits
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2942018200777460738, guid: e5ad517b6ffe7904e984d84ac049c2f2, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -654,7 +658,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Drone emptu
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2942018199807330054, guid: e5ad517b6ffe7904e984d84ac049c2f2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: e5ad517b6ffe7904e984d84ac049c2f2, type: 3}
 --- !u!1001 &3349595846816891800
 PrefabInstance:
