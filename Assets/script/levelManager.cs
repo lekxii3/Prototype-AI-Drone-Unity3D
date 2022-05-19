@@ -2,11 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class levelManager : MonoBehaviour
 {
-    private void OnCollisionEnter(Collision other)
+    public void OnCollisionEnter(Collision other)
     {
-        //if()
+        if (other.gameObject.CompareTag("Player"))
+        {
+            SceneManager.LoadScene(1);
+        }
     }
 }

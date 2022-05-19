@@ -39,6 +39,9 @@ public class DroneState : MonoBehaviour
     public float bulletspeed = 10000f;    
     private bool _canShoot = true;
 
+    [Header("Damage")] 
+    public bool damage = false;
+    public int health = 100;
 
     public enum DroneStatement
     {
@@ -47,19 +50,20 @@ public class DroneState : MonoBehaviour
         Alert,
         Shooting,
         RunAway,
-        Death, // a faire
+        Damage,
     }
 
-private void Start() 
+    
+    
+    private void Start() 
 {
     _navMesh = gameObject.GetComponent<NavMeshAgent>();
     _rb = gameObject.GetComponent<Rigidbody>();
-    
     destinationA = true;
     state = DroneStatement.Patrol;
 }
 
-private void Update() 
+    private void Update() 
 {
     if(CheckForTransition())
     {
@@ -71,25 +75,28 @@ private void Update()
 
 
 
-private bool CheckForTransition() // porte qui s'ouvre pour démarré la transition vers un autre etat
+    private bool CheckForTransition() // porte qui s'ouvre pour démarré la transition vers un autre etat
 {
     switch(state)
     {
         case DroneStatement.None:
-        // etat vide, transite automatiquement vers Patrol
-        break;
-
+            break;
+        //---------------------------------------------------------------------//
         case DroneStatement.Patrol:
-        // etat de patrouille d'un point A vers B 
+        
         if(detected == true)
         {
             nexState = DroneStatement.Shooting;
             return true;
-        }        
+        }
+        if (damage == true)
+        {
+            nexState = DroneStatement.Damage;
+        }
         break;
-
+        //---------------------------------------------------------------------//
         case DroneStatement.Alert:
-        //etat de contact, tres courte etat qui transite rapidement entre Shooting ou Patrol
+        
         if(detected == false)
         {
             nexState = DroneStatement.Patrol;
@@ -100,25 +107,40 @@ private bool CheckForTransition() // porte qui s'ouvre pour démarré la transit
             nexState = DroneStatement.Shooting;
             return true;
         }
+        if (damage == true)
+        {
+            nexState = DroneStatement.Damage;
+        }
         break;
-
+        //---------------------------------------------------------------------//
         case DroneStatement.Shooting:
-        //etat d'attaque vers le player
+        
         if(detected == false)
         {
             nexState = DroneStatement.Patrol;
             return true;
         }
+        if (damage == true)
+        {
+            nexState = DroneStatement.Damage;
+        }
         break;
-
+        //---------------------------------------------------------------------//
         case DroneStatement.RunAway:
-        //etat de fuite si HP 1 
+        
         break;
+        //---------------------------------------------------------------------//
+        case DroneStatement.Damage:
+            if (damage == false)
+            {
+                nexState = DroneStatement.Shooting;
+            }
+            break;
     }
     return false;
 }
 
-private void TransitionState() // effectue le chemin de la transition, d'un etat a un autre 
+    private void TransitionState() // effectue le chemin de la transition, d'un etat a un autre 
 {
     switch(nexState)
     {
@@ -141,6 +163,10 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
         case DroneStatement.RunAway:
         //etat de fuite si HP 1 
         break;
+        
+        case DroneStatement.Damage:
+            
+            break;
     }
 
     state = nexState;
@@ -158,6 +184,7 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
             //etat de patrouille d'un point A vers B 
             PatrolState();
             DetectionState();
+            
             break;
 
             case DroneStatement.Alert:
@@ -177,10 +204,14 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
             //etat de fuite si HP 1 
 
             break;
-
+            
+            case DroneStatement.Damage:
+                Damage();
+                break;
         }
     }
 
+    
     private void DetectionState()
     {
        if(player.gameObject != null)
@@ -219,7 +250,6 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
         }
     }
 
-
     private void PatrolState()
 {  
     if(destinationA == true && _navMesh.remainingDistance<0.5f)
@@ -241,8 +271,8 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
     {
         if(detected == true)
         {
-            GameObject NewBullet = Instantiate(bulletPrefab, bulletSpawnPoint.transform.position, bulletSpawnPoint.transform.rotation);
-            NewBullet.GetComponent<Rigidbody>().AddForce(bulletSpawnPoint.forward * bulletspeed);
+            //GameObject NewBullet = Instantiate(bulletPrefab, bulletSpawnPoint.transform.position, bulletSpawnPoint.transform.rotation);
+            //NewBullet.GetComponent<Rigidbody>().AddForce(bulletSpawnPoint.forward * bulletspeed);
         }
     }
 
@@ -257,5 +287,24 @@ private void TransitionState() // effectue le chemin de la transition, d'un etat
         }    
     }
 
+    private void Damage()
+    {
+        health--;
+        Debug.Log("aïïeuh !");
+        if (health == 0)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.CompareTag("bullet"))
+        {
+            damage = true;
+            Damage();
+            damage = false;
+        }
+    }
 }
  
