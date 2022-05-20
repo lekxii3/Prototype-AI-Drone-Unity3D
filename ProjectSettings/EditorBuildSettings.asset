@@ -11,4 +11,5 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/LVL2.unity
     guid: e7f6c22e873df6e4a87ca38f4eb2901e
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 7bfdf91706b494546ab3bfc32e541640, type: 2}
