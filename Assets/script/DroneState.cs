@@ -7,7 +7,7 @@ using UnityEngine.AI;
 public class DroneState : MonoBehaviour
 {
     
-    //a faire : etat follow, distance avec autre drone, et random entre different durée et nombre de tir. 
+    //a faire : etat follow ok, distance avec autre drone, et random entre different durée et nombre de tir. 
     
     
     public NavMeshAgent _navMesh;  
@@ -71,6 +71,7 @@ public class DroneState : MonoBehaviour
     _rb = gameObject.GetComponent<Rigidbody>();
     destinationA = true;
     state = DroneStatement.Patrol;
+    nexState = DroneStatement.Patrol;
 }
 
     private void Update() 
@@ -252,13 +253,15 @@ public class DroneState : MonoBehaviour
         if(detected == true)
         {
             _navMesh.SetDestination(playerPosition.position);
+            //resetPath = true;
             _navMesh.stoppingDistance = 8.0f;  
             Vector3 playerTargeted = new Vector3(playerPosition.position.x, transform.position.y, playerPosition.position.z);
             gameObject.transform.LookAt(playerTargeted);
             StartCoroutine(Cadence());
-            resetPath = true;
             //Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.green, 1f );
+
         }
+
         /*else if(detected == false)
         {
             _navMesh.ResetPath();
@@ -270,8 +273,11 @@ public class DroneState : MonoBehaviour
 
     private void PatrolState()
 {
-    
-        
+    /*if (resetPath == true)
+    {
+        _navMesh.ResetPath();
+        _navMesh.SetDestination(positionA.position);*/
+        _navMesh.stoppingDistance = 0.0f;  
         Debug.Log("1");
         if(destinationA == true && _navMesh.remainingDistance<0.5f)
         {
@@ -286,19 +292,21 @@ public class DroneState : MonoBehaviour
             destinationB = false;
             destinationA = true;
             _navMesh.SetDestination(positionA.position);
-        }   
-        
-        
-    
+        }
+       
+       //_navMesh.SetDestination(positionA.position);
 
+    /*}*/
+        
+        
 }
 
     private void ShootState()
     {
         if(detected == true)
         {
-            GameObject NewBullet = Instantiate(bulletPrefab, bulletSpawnPoint.transform.position, bulletSpawnPoint.transform.rotation);
-            NewBullet.GetComponent<Rigidbody>().AddForce(bulletSpawnPoint.forward * bulletspeed);
+            //GameObject NewBullet = Instantiate(bulletPrefab, bulletSpawnPoint.transform.position, bulletSpawnPoint.transform.rotation);
+            //NewBullet.GetComponent<Rigidbody>().AddForce(bulletSpawnPoint.forward * bulletspeed);
         }
     }
 
