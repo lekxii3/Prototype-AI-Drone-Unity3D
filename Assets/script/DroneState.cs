@@ -6,6 +6,10 @@ using UnityEngine.AI;
 
 public class DroneState : MonoBehaviour
 {
+    
+    //a faire : etat follow, distance avec autre drone, et random entre different durée et nombre de tir. 
+    
+    
     public NavMeshAgent _navMesh;  
     private Rigidbody _rb;
     public GameObject _Drone;
@@ -17,13 +21,14 @@ public class DroneState : MonoBehaviour
     [Header("Patrol")] 
     public bool destinationA = false;
     public bool destinationB = false;
-    public Transform positionA;
-    public Transform positionB;
+    [HideInInspector]public Transform positionA;
+    [HideInInspector]public Transform positionB;
+    private bool resetPath = false;
 
     [Header("Detection")]
-    public Transform playerPosition;
-    public GameObject player;
-    public Transform dronePosition;
+    [HideInInspector]public Transform playerPosition;
+    [HideInInspector]public GameObject player;
+    [HideInInspector]public Transform dronePosition;
     public float detectionDistance = 1f;
     public LayerMask playerLayer;
     public bool detected = false;
@@ -34,14 +39,19 @@ public class DroneState : MonoBehaviour
     private Vector3 direction;
 
     [Header ("Shooting")]
-    public Transform bulletSpawnPoint;
-    public GameObject bulletPrefab;
+    [HideInInspector]public Transform bulletSpawnPoint;
+    [HideInInspector]public GameObject bulletPrefab;
     public float bulletspeed = 10000f;    
     private bool _canShoot = true;
 
     [Header("Damage")] 
-    public bool damage = false;
+    private bool damage = false;
     public int health = 100;
+    
+    /* Event Manage */
+    public delegate void SignalDroneAnim();
+    public static event SignalDroneAnim SignalDroneAnimLaunch;
+    
 
     public enum DroneStatement
     {
@@ -237,42 +247,58 @@ public class DroneState : MonoBehaviour
                 
     }
 
-    private void SightAndShoot()
+    private void SightAndShoot()  //<---------------------------------ici
     {
         if(detected == true)
         {
-            _navMesh.SetDestination(dronePosition.position);
+            _navMesh.SetDestination(playerPosition.position);
+            _navMesh.stoppingDistance = 8.0f;  
             Vector3 playerTargeted = new Vector3(playerPosition.position.x, transform.position.y, playerPosition.position.z);
             gameObject.transform.LookAt(playerTargeted);
             StartCoroutine(Cadence());
+            resetPath = true;
             //Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.green, 1f );
-              
         }
+        /*else if(detected == false)
+        {
+            _navMesh.ResetPath();
+            _navMesh.SetDestination(positionA.position);
+        }*/
+        
+        
     }
 
     private void PatrolState()
-{  
-    if(destinationA == true && _navMesh.remainingDistance<0.5f)
-    {
-    destinationA = false;
-    destinationB = true;
-    _navMesh.SetDestination(positionB.position);
-    }
-    else if(destinationB == true && _navMesh.remainingDistance<0.5f)
-    {
-    destinationB = false;
-    destinationA = true;
-    _navMesh.SetDestination(positionA.position);
-    }   
+{
     
+        
+        Debug.Log("1");
+        if(destinationA == true && _navMesh.remainingDistance<0.5f)
+        {
+            Debug.Log("2");
+            destinationA = false;
+            destinationB = true;
+            _navMesh.SetDestination(positionB.position);
+        }
+        else if(destinationB == true && _navMesh.remainingDistance<0.5f)
+        {
+            Debug.Log("3");
+            destinationB = false;
+            destinationA = true;
+            _navMesh.SetDestination(positionA.position);
+        }   
+        
+        
+    
+
 }
 
     private void ShootState()
     {
         if(detected == true)
         {
-            //GameObject NewBullet = Instantiate(bulletPrefab, bulletSpawnPoint.transform.position, bulletSpawnPoint.transform.rotation);
-            //NewBullet.GetComponent<Rigidbody>().AddForce(bulletSpawnPoint.forward * bulletspeed);
+            GameObject NewBullet = Instantiate(bulletPrefab, bulletSpawnPoint.transform.position, bulletSpawnPoint.transform.rotation);
+            NewBullet.GetComponent<Rigidbody>().AddForce(bulletSpawnPoint.forward * bulletspeed);
         }
     }
 
@@ -290,7 +316,8 @@ public class DroneState : MonoBehaviour
     private void Damage()
     {
         health--;
-        Debug.Log("aïïeuh !");
+        SignalDroneAnimLaunch?.Invoke();
+        
         if (health == 0)
         {
             Destroy(gameObject);
@@ -306,5 +333,7 @@ public class DroneState : MonoBehaviour
             damage = false;
         }
     }
+
+   
 }
  

@@ -11,8 +11,6 @@ public class Player : MonoBehaviour
     [SerializeField] private Transform camera;
     [SerializeField] private GameObject bulletPrefab;
     public float bulletspeed = 10000f;
-    
-
 
     private void Update()
     {

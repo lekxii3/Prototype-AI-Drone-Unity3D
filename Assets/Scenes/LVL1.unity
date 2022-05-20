@@ -590,6 +590,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1562094032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1562094026}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06b21583f784a1d44bb37c4b483dcf52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AnimManage: {fileID: 1562094027}
 --- !u!4 &1923552180 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 174892536576453785, guid: e41c14a420a2d2e4e9dae8d3a6971cea, type: 3}
@@ -731,6 +744,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2942018200777460739, guid: e5ad517b6ffe7904e984d84ac049c2f2, type: 3}
+      propertyPath: m_StoppingDistance
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2942018200777460764, guid: e5ad517b6ffe7904e984d84ac049c2f2, type: 3}
       propertyPath: m_Name
       value: Drone emptu
@@ -759,7 +776,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3349595845299725467, guid: 3f8065e9d17a2f74a96a0ced55580b20, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 8.54
+      value: -8.55
       objectReference: {fileID: 0}
     - target: {fileID: 3349595845299725467, guid: 3f8065e9d17a2f74a96a0ced55580b20, type: 3}
       propertyPath: m_LocalPosition.y
@@ -767,7 +784,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3349595845299725467, guid: 3f8065e9d17a2f74a96a0ced55580b20, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -6.23
+      value: -10.21
       objectReference: {fileID: 0}
     - target: {fileID: 3349595845299725467, guid: 3f8065e9d17a2f74a96a0ced55580b20, type: 3}
       propertyPath: m_LocalRotation.w
