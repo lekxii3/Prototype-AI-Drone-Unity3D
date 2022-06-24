@@ -227,6 +227,8 @@ public class DroneState : MonoBehaviour
        if(player.gameObject != null)
         {
             direction = Vector3.Normalize(player.transform.position - dronePosition.position);
+            Debug.Log(player.transform.position);
+            Debug.Log(dronePosition.transform.position);
 
             if(Physics.Raycast(dronePosition.position, direction, out _raycastHit, 12f))
             {
@@ -245,6 +247,7 @@ public class DroneState : MonoBehaviour
         }   
         Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.red, 1f);    
         Debug.Log(_raycastHit.collider.name); 
+       
                 
     }
 
