@@ -26,6 +26,7 @@ public class DroneState : MonoBehaviour
 
     [Header("Detection")]
     public Transform playerPosition;
+    
     public GameObject player;
     public Transform dronePosition;
     public float detectionDistance = 1f;
@@ -224,15 +225,16 @@ public class DroneState : MonoBehaviour
     
     private void DetectionState()
     {
-       if(player.gameObject != null)
+       if(player!= null)
         {
             direction = Vector3.Normalize(player.transform.position - dronePosition.position);
-            Debug.Log(player.transform.position);
-            Debug.Log(dronePosition.transform.position);
 
+            
+            Debug.Log(player.transform.position);
+            
             if(Physics.Raycast(dronePosition.position, direction, out _raycastHit, 12f))
             {
-                if(_raycastHit.collider.gameObject.CompareTag("Player"))
+                if(_raycastHit.collider.CompareTag("Player"))
                 {
                     detected = true;
                     Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.green, 1f);
@@ -245,10 +247,7 @@ public class DroneState : MonoBehaviour
                 detected = false;
             }                     
         }   
-        Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.red, 1f);    
-        Debug.Log(_raycastHit.collider.name); 
-       
-                
+        Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.red, 1f);
     }
 
     private void SightAndShoot()  
@@ -282,13 +281,13 @@ public class DroneState : MonoBehaviour
         _navMesh.SetDestination(positionA.position);*/
         _navMesh.stoppingDistance = 0.0f;  
         
-        if(destinationA == true && _navMesh.remainingDistance<0.5f)
+        if(destinationA == true && _navMesh.remainingDistance<2f)
         {
             destinationA = false;
             destinationB = true;
             _navMesh.SetDestination(positionB.position);
         }
-        else if(destinationB == true && _navMesh.remainingDistance<0.5f)
+        else if(destinationB == true && _navMesh.remainingDistance<2f)
         {
             destinationB = false;
             destinationA = true;
