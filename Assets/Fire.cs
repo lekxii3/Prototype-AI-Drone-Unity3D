@@ -4,21 +4,28 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 public class Fire : MonoBehaviour
 {
-    [SerializeField] InputActionAsset playerController;
-    InputAction fire;
+    public delegate void FireSignal();
+    public static FireSignal FireSignalLaunch;
+    [SerializeField] InputActionAsset PlayerController;
+    InputAction _fire;
+ 
 
-    private void Start() {
-        var gameplayActionMap = playerController.FindActionMap("Default");
+    private void FixedUpdate() {
+        triggerPressed();        
+    }
 
-        fire = gameplayActionMap.FindAction("Trigger controller");
-
-        fire.performed += FireTest;
-        fire.canceled += FireTest;
-        fire.Enable();
+    void triggerPressed(){
+        var gameplayActionMap = PlayerController.FindActionMap("Default");
+        _fire = gameplayActionMap.FindAction("Trigger controller");
+        _fire.performed += FireTest; //here is once too much ... choice between performed=PressEntered or canceled=PressExited 
+        //_fire.canceled += FireTest;
+        _fire.Enable();
     }
 
     void FireTest(InputAction.CallbackContext context) 
     {
-        Debug.Log("Fire !");
+        Debug.Log("tire");
+        FireSignalLaunch?.Invoke();
     }
+    
 }

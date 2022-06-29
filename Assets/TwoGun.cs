@@ -1,23 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.Animations;
 public class TwoGun : Viewfinder
 {
+    Rigidbody _rb;
     public Transform SpawnBullet;
-    public GameObject Gun;
+    public GameObject Bullet;
+    float _powerImpulseBullet= 10000f;
 
-    private void Start() {
-       
+    private void OnEnable() {
+        Fire.FireSignalLaunch +=_instantiateBulletPrefab;
     }
-    
-    void Update()
-    {
-        //Gun.transform.LookAt(RayPos());
-        Gun.transform.LookAt(RayPos());
-        Quaternion q = transform.rotation;
-        q.eulerAngles = new Vector3(transform.rotation.eulerAngles.x,transform.rotation.eulerAngles.y,0f);
-        transform.rotation = q;
-        //Gun.GetComponentInChildren<Transform>().transform.LookAt(RayPos());
+    private void OnDisable() {
+        Fire.FireSignalLaunch -=_instantiateBulletPrefab;
+    }
+
+    void _instantiateBulletPrefab(){        
+        GameObject _newBullet = Instantiate(Bullet,SpawnBullet.transform.position,Quaternion.identity);
+        _newBullet.GetComponent<Rigidbody>().AddForce(SpawnBullet.forward*_powerImpulseBullet);
     }
 }
