@@ -20,7 +20,17 @@ public class raytest : MonoBehaviour
             Debug.DrawRay(transform.position,transform.TransformDirection(new Vector3(currentValue,0,1)));
             _directionTest = transform.position - transform.TransformDirection(new Vector3(currentValue,0,1));
             Physics.Raycast(transform.position, _directionTest);
+            //_hits = Physics.RaycastAll(transform.position, _directionTest,12f);
             currentValue = currentValue+incrementValue;
+            //if(Physics.RaycastAll(out RaycastHit _hits))
+
+            if(Physics.Raycast(transform.position,_directionTest, out RaycastHit _hits, 12f)){
+                Debug.Log(_hits.collider.name);
+            }
+            if(currentValue==0.7f){
+                currentValue=-0.6f;
+            }
+
         }
     }
 
