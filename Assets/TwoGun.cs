@@ -16,7 +16,8 @@ public class TwoGun : Viewfinder
         Fire.FireSignalLaunch -=_instantiateBulletPrefab;
     }
 
-    void _instantiateBulletPrefab(){        
+    void _instantiateBulletPrefab(){
+        SpawnBullet.LookAt(RayPos());        
         GameObject _newBullet = Instantiate(Bullet,SpawnBullet.transform.position,Quaternion.identity);
         _newBullet.GetComponent<Rigidbody>().AddForce(SpawnBullet.forward*_powerImpulseBullet);
     }

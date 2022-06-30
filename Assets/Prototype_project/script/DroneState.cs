@@ -195,6 +195,7 @@ public class DroneState : MonoBehaviour
             //etat de patrouille d'un point A vers B 
             PatrolState();
             DetectionState();
+            SurveillanceState();
             
             break;
 
@@ -209,6 +210,7 @@ public class DroneState : MonoBehaviour
                 SightAndShoot(); 
             }
                 DetectionState();
+                SurveillanceState();
                 break;
 
             case DroneStatement.RunAway:
@@ -225,7 +227,21 @@ public class DroneState : MonoBehaviour
     
     private void DetectionState()
     {
-       if(player!= null)
+       Ray ray;
+       RaycastHit hit;
+       //Vector3 _directionTest = new Vector3.Normalize(dronePosition.transform.position-new Vector3(1,0,1));
+       
+       Debug.DrawRay(dronePosition.position, dronePosition.forward,Color.blue);
+       Debug.DrawLine(dronePosition.position, Vector3.Normalize(dronePosition.transform.position-new Vector3(1,0,1)),Color.blue);
+       Debug.DrawLine(dronePosition.position, Vector3.Normalize(dronePosition.transform.position-new Vector3(-1,0,1)),Color.blue);
+
+    }
+
+    //create 3 raycast en forward et if collide player so raycast sa position 
+
+    void SurveillanceState()
+    {
+        if(player!= null)
         {
             direction = Vector3.Normalize(player.transform.position - dronePosition.position);
 
@@ -237,6 +253,7 @@ public class DroneState : MonoBehaviour
                 if(_raycastHit.collider.CompareTag("Player"))
                 {
                     detected = true;
+                    player.transform.position = player.transform.position;
                     Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.green, 1f);
                 }
                 else{

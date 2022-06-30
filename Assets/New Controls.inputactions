@@ -19,8 +19,8 @@
                 {
                     "name": "",
                     "id": "de24dbdb-2f74-46bf-b3cb-287c4a35368e",
-                    "path": "<XRController>{RightHand}/triggerPressed",
-                    "interactions": "Hold",
+                    "path": "<OculusTouchController>/triggerPressed",
+                    "interactions": "Press",
                     "processors": "",
                     "groups": "",
                     "action": "Trigger controller",
