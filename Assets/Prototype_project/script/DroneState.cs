@@ -22,11 +22,10 @@ public class DroneState : MonoBehaviour
     public bool destinationB = false;
     public Transform positionA;
     public Transform positionB;
-    private bool resetPath = false;
+    //private bool resetPath = false;
 
     [Header("Detection")]
-    public Transform playerPosition;
-    
+    public Transform playerPosition;    
     public GameObject player;
     public Transform dronePosition;
     public float detectionDistance = 1f;

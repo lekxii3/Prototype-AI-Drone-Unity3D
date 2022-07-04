@@ -6,16 +6,17 @@ public class raytest : MonoBehaviour
 {
     //Ray[] ray= new Ray[13];
     RaycastHit[] _hits= new RaycastHit[13];
+    RaycastHit _hitTest;
     Vector3 _directionTest = new Vector3(1,0,1);
-    float currentValue =-0.6f;
-    float incrementValue=0.1f; 
+    float currentValue =-6;
+    float incrementValue=1f; 
 
     private void Start() {
        
     }
     void Update()
     {       
-        foreach (RaycastHit _ray in _hits)
+        /*foreach (RaycastHit _ray in _hits)
         {
             Debug.DrawRay(transform.position,transform.TransformDirection(new Vector3(currentValue,0,1)));
             _directionTest = transform.position - transform.TransformDirection(new Vector3(currentValue,0,1));
@@ -30,28 +31,25 @@ public class raytest : MonoBehaviour
             if(currentValue==0.7f){
                 currentValue=-0.6f;
             }
+        }*/
 
+        /*if(Physics.Raycast(transform.position,transform.TransformDirection(Vector3.forward), out _hitTest, 20f)){
+            Debug.Log(_hitTest.collider.name);            
+        }
+        Debug.DrawLine(transform.position,transform.TransformPoint(Vector3.forward*20));*/
+
+        foreach (RaycastHit _rayHit in _hits)
+        {
+            //Physics.Raycast(transform.position, transform.TransformDirection(new Vector3(currentValue,0,20),out _rayHit,));
+            Debug.DrawRay(transform.position, transform.TransformDirection(new Vector3(currentValue,0,20)));
+            currentValue=currentValue+incrementValue;
+            if(currentValue==6f){
+                currentValue=-6f;
+            }
+            Debug.Log(_rayHit.collider.name);
+            
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

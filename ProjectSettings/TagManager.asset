@@ -12,6 +12,7 @@ TagManager:
   - PlayerHand
   - PositionA
   - PositionB
+  - Bobotte
   layers:
   - Default
   - TransparentFX
