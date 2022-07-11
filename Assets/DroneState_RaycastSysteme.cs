@@ -2,16 +2,43 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DroneState_RaycastSysteme : DroneState_V02
+public class DroneState_RaycastSysteme : MonoBehaviour
 {
     public delegate void systemRaySignal();
     public static systemRaySignal systemRaySignalLaunch;
     Transform _playerPos;
-    GameObject _player;
-    List<Vector3> _listVector3;
-    List<RaycastHit> _ListRaycastHit;
+    public GameObject _player;
+    public List<Vector3> _listVector3;
+    public List<RaycastHit> _ListRaycastHit;
 
-    private void Start() {
+    protected virtual void _listRaycastVectorSyteme(){
+        
+        for (int i = 0; i < _ListRaycastHit.Count; i++)
+        {
+            for (int y = 0; y < _listVector3.Count; y++)
+            {   
+                RaycastHit _hit;
+                if(Physics.Raycast(transform.position,transform.TransformDirection(_listVector3[y]), out _hit, 20)){
+                    if(_hit.collider.CompareTag("Player")){
+                        Debug.DrawRay(transform.position,transform.TransformDirection(_listVector3[y]));
+                        GetComponent<DroneState_V02>().detected=true; //------
+                        Debug.Log(GetComponent<DroneState_V02>().detected);
+                        _player=_hit.collider.gameObject;
+                        Debug.Log(_player.gameObject.name);
+                        Debug.Log(_player.gameObject.tag);                        
+                    }else{
+                    GetComponent<DroneState_V02>().detected=false;
+                    Debug.Log(GetComponent<DroneState_V02>().detected);
+                }
+                }else{
+                    GetComponent<DroneState_V02>().detected=false;
+                    Debug.Log(GetComponent<DroneState_V02>().detected);
+                }
+            }
+        }
+    }
+
+    protected virtual void Element_Start(){
         _listVector3=new List<Vector3>(){
             {new Vector3(0,0,20)},
             {new Vector3(-7,0,20)},
@@ -46,25 +73,8 @@ public class DroneState_RaycastSysteme : DroneState_V02
             {new RaycastHit()},
             {new RaycastHit()},
             {new RaycastHit()}
-        };        
+        };  
     }
+
     
-    public void _listRaycastVectorSyteme(){
-        
-        for (int i = 0; i < _ListRaycastHit.Count; i++)
-        {
-            RaycastHit _hit;
-            for (int y = 0; y < _listVector3.Count; y++)
-            {
-                if(Physics.Raycast(transform.position,_listVector3[y], out _hit, 20)){
-                    if(_hit.collider.CompareTag("Player")){
-                        _player=_hit.collider.gameObject;
-                        Debug.Log(_player.gameObject.name);
-                        Debug.Log(_player.gameObject.tag);
-                        systemRaySignalLaunch?.Invoke();
-                    }
-                }
-            }
-        }
-    }
 }

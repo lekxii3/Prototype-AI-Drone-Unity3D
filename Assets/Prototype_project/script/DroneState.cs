@@ -206,7 +206,7 @@ public class DroneState : MonoBehaviour
                 //etat d'attaque vers le player
             if(detected == true)
             {
-                SightAndShoot(); 
+                Target(); 
             }
                 DetectionState();
                 SurveillanceState();
@@ -266,7 +266,7 @@ public class DroneState : MonoBehaviour
         Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.red, 1f);
     }
 
-    private void SightAndShoot()  
+    private void Target()  
     {
         if(detected == true)
         {
@@ -275,7 +275,7 @@ public class DroneState : MonoBehaviour
             _navMesh.stoppingDistance = 8.0f;  
             Vector3 playerTargeted = new Vector3(playerPosition.position.x, transform.position.y, playerPosition.position.z);
             gameObject.transform.LookAt(playerTargeted);
-            StartCoroutine(Cadence());
+            StartCoroutine(Shoot());
             //Debug.DrawRay(dronePosition.position, direction*_raycastHit.distance, Color.green, 1f );
 
         }
@@ -317,7 +317,7 @@ public class DroneState : MonoBehaviour
         
 }
 
-    private void ShootState()
+    private void Cadence()
     {
         if(detected == true)
         {
@@ -326,13 +326,13 @@ public class DroneState : MonoBehaviour
         }
     }
 
-    private IEnumerator Cadence()
+    private IEnumerator Shoot()
     {
         if(_canShoot == true)
         {
             _canShoot = false;
             yield return new WaitForSeconds(0.5f);
-            ShootState();
+            Cadence();
             _canShoot = true;
         }    
     }
